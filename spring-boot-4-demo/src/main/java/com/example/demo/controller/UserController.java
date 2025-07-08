@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,7 +48,7 @@ public class UserController {
     public Flux<User> streamUsers() {
         return Flux.interval(Duration.ofSeconds(1))
                 .take(10)
-                .map(i -> new User(i, "user" + i, "user" + i + "@example.com", null));
+                .map(i -> new User(i, "user" + i, "user" + i + "@example.com", LocalDateTime.now()));
     }
     
     @GetMapping("/reactive/{id}")

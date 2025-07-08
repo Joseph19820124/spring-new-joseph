@@ -35,15 +35,27 @@ public class ReactiveController {
                 .doOnNext(item -> log.info("Producing: {} on thread: {}", item, Thread.currentThread().getName()));
     }
     
+    @SuppressWarnings("unchecked")
     @GetMapping("/github/{username}")
-    public Mono<Map> getGithubUser(@PathVariable String username) {
+    public Mono<Map<String, Object>> getGithubUser(@PathVariable String username) {
         return Mono.fromCallable(() -> {
             log.info("Fetching GitHub user: {} on thread: {}", username, Thread.currentThread().getName());
-            return restClient.get()
-                    .uri("/users/{username}", username)
-                    .retrieve()
-                    .body(Map.class);
-        });
+            try {
+                Map<String, Object> result = restClient.get()
+                        .uri("/users/{username}", username)
+                        .retrieve()
+                        .body(Map.class);
+                return result;
+            } catch (Exception e) {
+                log.error("Error fetching GitHub user {}: {}", username, e.getMessage());
+                throw e;
+            }
+        }).onErrorReturn(Map.of(
+            "error", "Failed to fetch GitHub user",
+            "username", username,
+            "message", "可能原因：GitHub API速率限制、用户不存在或网络问题",
+            "suggestion", "请稍后重试或检查用户名是否正确"
+        ));
     }
     
     @GetMapping("/combined")
