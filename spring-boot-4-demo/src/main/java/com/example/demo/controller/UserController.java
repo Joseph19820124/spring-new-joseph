@@ -47,8 +47,8 @@ public class UserController {
     @GetMapping(value = "/stream", produces = "text/event-stream")
     public Flux<User> streamUsers() {
         return Flux.interval(Duration.ofSeconds(1))
-                .take(10)
-                .map(i -> new User(i, "user" + i, "user" + i + "@example.com", LocalDateTime.now()));
+                .take(100)
+                .map(i -> new User(i, "joseph" + i, "joseph.siyi" + i + "@gmail.com", LocalDateTime.now()));
     }
     
     @GetMapping("/reactive/{id}")
